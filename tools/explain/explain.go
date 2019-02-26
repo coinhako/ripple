@@ -11,10 +11,10 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/RaghavSood/ripple/data"
+	"github.com/RaghavSood/ripple/terminal"
+	"github.com/RaghavSood/ripple/websockets"
 	"github.com/golang/glog"
-	"github.com/dabankio/ripple/data"
-	"github.com/dabankio/ripple/terminal"
-	"github.com/dabankio/ripple/websockets"
 )
 
 const usage = `Usage: explain [tx hash|ledger sequence|ripple address|-] [options]
