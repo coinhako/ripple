@@ -10,12 +10,14 @@ type Hashable interface {
 	GetHash() *Hash256
 }
 
-type Signer interface {
+type SignerAgent interface {
 	Hashable
 	InitialiseForSigning()
+	InitialiseForMultiSigning()
 	SigningPrefix() HashPrefix
 	GetPublicKey() *PublicKey
 	GetSignature() *VariableLength
+	AddSignature(*Signer)
 }
 
 type Router interface {
@@ -39,8 +41,9 @@ type LedgerEntry interface {
 }
 
 type Transaction interface {
-	Signer
+	SignerAgent
 	GetTransactionType() TransactionType
+	SortSigners([]SignerEntries)
 	GetBase() *TxBase
 	PathSet() PathSet
 }

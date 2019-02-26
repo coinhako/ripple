@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/rubblelabs/ripple/data"
+	"github.com/dabankio/ripple/data"
 )
 
 var counter uint64
@@ -130,6 +130,12 @@ type SubmitCommand struct {
 	Result *SubmitResult `json:"result,omitempty"`
 }
 
+type SubmitMultiSignedCommand struct {
+	*Command
+	TxJson data.Transaction `json:"tx_json"`
+	Result *SubmitResult    `json:"result,omitempty"`
+}
+
 type SubmitResult struct {
 	EngineResult        data.TransactionResult `json:"engine_result"`
 	EngineResultCode    int                    `json:"engine_result_code"`
@@ -219,8 +225,9 @@ type RipplePathFindResult struct {
 
 type AccountInfoCommand struct {
 	*Command
-	Account data.Account       `json:"account"`
-	Result  *AccountInfoResult `json:"result,omitempty"`
+	Account     data.Account       `json:"account"`
+	SignerLists bool               `json:"signer_lists"`
+	Result      *AccountInfoResult `json:"result,omitempty"`
 }
 
 type AccountInfoResult struct {

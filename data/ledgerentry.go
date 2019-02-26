@@ -27,7 +27,7 @@ type AccountRoot struct {
 	TickSize      *uint8           `json:",omitempty"`
 	TransferRate  *uint32          `json:",omitempty"`
 	Domain        *VariableLength  `json:",omitempty"`
-	Signers       *VariableLength  `json:",omitempty"`
+	SignerLists   []SignerList     `json:"signer_lists,omitempty"`
 }
 
 type RippleState struct {
@@ -120,12 +120,26 @@ type SignerEntry struct {
 	SignerWeight *uint16  `json:",omitempty"`
 }
 
+type SignerEntries struct {
+	SignerEntry SignerEntry `json:",omitempty"`
+}
+
+type Signer struct {
+	Signer struct {
+		Account       *Account        `json:",omitempty"`
+		SigningPubKey *PublicKey      `json:",omitempty"`
+		TxnSignature  *VariableLength `json:",omitempty"`
+	} `json:",omitempty"`
+}
+
+type Signers []Signer
+
 type SignerList struct {
 	leBase
 	Flags         *LedgerEntryFlag `json:",omitempty"`
 	OwnerNode     *NodeIndex       `json:",omitempty"`
 	SignerQuorum  *uint32          `json:",omitempty"`
-	SignerEntries []SignerEntry    `json:",omitempty"`
+	SignerEntries []SignerEntries  `json:",omitempty"`
 	SignerListID  *uint32          `json:",omitempty"`
 }
 
@@ -180,7 +194,7 @@ func (s *Escrow) Affects(account Account) bool {
 }
 func (s *SignerList) Affects(account Account) bool {
 	for _, entry := range s.SignerEntries {
-		if entry.Account != nil && entry.Account.Equals(account) {
+		if entry.SignerEntry.Account != nil && entry.SignerEntry.Account.Equals(account) {
 			return true
 		}
 	}

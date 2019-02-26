@@ -9,11 +9,12 @@ import (
 	"net/url"
 	"reflect"
 	"sort"
+	"strings"
 	"time"
 
+	"github.com/dabankio/ripple/data"
 	"github.com/golang/glog"
 	"github.com/gorilla/websocket"
-	"github.com/rubblelabs/ripple/data"
 )
 
 const (
@@ -39,7 +40,6 @@ type Remote struct {
 // NewRemote returns a new remote session connected to the specified
 // server endpoint URI. To close the connection, use Close().
 func NewRemote(endpoint string) (*Remote, error) {
-	glog.Infoln(endpoint)
 	u, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
@@ -220,6 +220,20 @@ func (r *Remote) Submit(tx data.Transaction) (*SubmitResult, error) {
 	return cmd.Result, nil
 }
 
+// Synchronously submit a single transaction
+func (r *Remote) SubmitMultiSigned(tx data.Transaction) (*SubmitResult, error) {
+	cmd := &SubmitMultiSignedCommand{
+		Command: newCommand("submit_multisigned"),
+		TxJson:  tx,
+	}
+	r.outgoing <- cmd
+	<-cmd.Ready
+	if cmd.CommandError != nil {
+		return nil, cmd.CommandError
+	}
+	return cmd.Result, nil
+}
+
 // Synchronously submit multiple transactions
 func (r *Remote) SubmitBatch(txs []data.Transaction) ([]*SubmitResult, error) {
 	commands := make([]*SubmitCommand, len(txs))
@@ -347,8 +361,9 @@ func (r *Remote) RipplePathFind(src, dest data.Account, amount data.Amount, srcC
 // Synchronously requests account info
 func (r *Remote) AccountInfo(a data.Account) (*AccountInfoResult, error) {
 	cmd := &AccountInfoCommand{
-		Command: newCommand("account_info"),
-		Account: a,
+		Command:     newCommand("account_info"),
+		Account:     a,
+		SignerLists: true,
 	}
 	r.outgoing <- cmd
 	<-cmd.Ready
@@ -517,7 +532,9 @@ func (r *Remote) readPump(inbound chan<- []byte) {
 	for {
 		_, message, err := r.ws.ReadMessage()
 		if err != nil {
-			glog.Errorln(err)
+			if !strings.Contains(err.Error(), "closed network") {
+				glog.Errorln(err)
+			}
 			return
 		}
 		glog.V(2).Infoln(dump(message))
