@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/RaghavSood/ripple/data"
-	"github.com/RaghavSood/ripple/websockets"
+	"github.com/coinhako/ripple/data"
+	"github.com/coinhako/ripple/websockets"
 	"github.com/fatih/color"
 )
 

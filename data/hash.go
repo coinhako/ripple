@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/RaghavSood/ripple/crypto"
+	"github.com/coinhako/ripple/crypto"
 )
 
 type KeyType int

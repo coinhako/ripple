@@ -7,8 +7,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/RaghavSood/ripple/data"
-	"github.com/RaghavSood/ripple/websockets"
+	"github.com/coinhako/ripple/data"
+	"github.com/coinhako/ripple/websockets"
 )
 
 func checkErr(err error, quit bool) {

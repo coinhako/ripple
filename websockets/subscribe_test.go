@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/RaghavSood/ripple/data"
+	"github.com/coinhako/ripple/data"
 	. "gopkg.in/check.v1"
 )
 
